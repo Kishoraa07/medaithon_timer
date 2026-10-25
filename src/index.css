@@ -15,14 +15,17 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-html,
 body {
   background-color: var(--color-bg-dark);
   color: var(--color-text-primary);
   font-family: var(--font-inter);
   overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
   scrollbar-width: thin;
   scrollbar-color: #555555 #050508;
 }

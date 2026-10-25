@@ -172,7 +172,7 @@ const TimerPage = ({ onNavigateToGallery }) => {
   const gaugeStrokeDashoffset = gaugeCircumference - (parseFloat(progressPercent) / 100) * gaugeCircumference;
 
   return (
-    <div className="relative min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full bg-[#050508] text-white flex flex-col justify-between selection:bg-white selection:text-black font-['Inter']">
+    <div className="relative min-h-screen w-full bg-[#050508] text-white flex flex-col justify-between selection:bg-white selection:text-black font-['Inter'] overflow-x-hidden">
       {/* 3D Molten Metal Background WebGL */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
         <MoltenMetal
@@ -374,7 +374,7 @@ const TimerPage = ({ onNavigateToGallery }) => {
       </header>
 
       {/* MAIN TIMER ARENA */}
-      <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-3 md:py-4 flex flex-col justify-between overflow-y-auto lg:overflow-visible">
+      <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 md:py-6 flex flex-col justify-between">
         {/* Japanese Calligraphy Subtitle & Top Banner */}
         <div className="flex flex-col items-center text-center mb-2 sm:mb-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-cyan-500/10 via-white/5 to-amber-500/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.08)] backdrop-blur-md mb-1.5">
