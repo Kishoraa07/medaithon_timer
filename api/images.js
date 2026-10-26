@@ -25,7 +25,7 @@ if (!global.__MEDAITHON_PHOTOS_FALLBACK__) {
 export default async function handler(req, res) {
   // CORS & Cache-Control headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   if (req.method === 'OPTIONS') {
@@ -139,6 +139,66 @@ export default async function handler(req, res) {
         success: true,
         photo: newPhoto,
         hostedOnCloudinary: hasCloudinary,
+      })
+    }
+
+    // -------------------------------------------------------------
+    // DELETE /api/images - Delete photo from Cloudinary & Database
+    // -------------------------------------------------------------
+    if (req.method === 'DELETE' || (req.method === 'POST' && (req.body?.action === 'delete'))) {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {})
+      const urlObj = new URL(req.url, 'http://localhost')
+      const photoId = urlObj.searchParams.get('id') || body.id
+
+      if (!photoId) {
+        return res.status(400).json({ success: false, error: 'Photo ID is required' })
+      }
+
+      let deletedFromCloudinary = false
+      let deletedFromDb = false
+
+      // 1. Delete from MongoDB if available
+      if (collection) {
+        try {
+          const doc = await collection.findOne({ id: photoId })
+          if (doc) {
+            await collection.deleteOne({ id: photoId })
+            deletedFromDb = true
+            // If it had a Cloudinary public ID, destroy it on Cloudinary
+            if (hasCloudinary && doc.id && !doc.id.startsWith('local_')) {
+              try {
+                await cloudinary.uploader.destroy(doc.id)
+                deletedFromCloudinary = true
+              } catch (cErr) {
+                console.warn('Cloudinary destroy warning:', cErr.message)
+              }
+            }
+          }
+        } catch (dbErr) {
+          console.error('MongoDB delete error:', dbErr.message)
+        }
+      }
+
+      // 2. Direct Cloudinary delete if applicable
+      if (hasCloudinary && !deletedFromCloudinary && typeof photoId === 'string' && !photoId.startsWith('local_')) {
+        try {
+          await cloudinary.uploader.destroy(photoId)
+          deletedFromCloudinary = true
+        } catch (cErr) {
+          console.warn('Cloudinary direct destroy warning:', cErr.message)
+        }
+      }
+
+      // 3. Remove from in-memory fallback
+      global.__MEDAITHON_PHOTOS_FALLBACK__ = (global.__MEDAITHON_PHOTOS_FALLBACK__ || []).filter(
+        (p) => String(p.id) !== String(photoId)
+      )
+
+      return res.status(200).json({
+        success: true,
+        deletedId: photoId,
+        deletedFromDb,
+        deletedFromCloudinary,
       })
     }
 

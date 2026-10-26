@@ -70,3 +70,42 @@ export async function uploadLivePhoto({ image, title, category, location, descri
     return { success: true, photo: localPhoto, isFallback: true, error: err.message }
   }
 }
+
+export async function deleteLivePhoto(photoId) {
+  try {
+    const res = await fetch(`/api/images?id=${encodeURIComponent(photoId)}`, {
+      method: 'DELETE',
+    })
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}))
+      throw new Error(errData.error || `HTTP ${res.status}`)
+    }
+    const data = await res.json()
+
+    // Also update localStorage
+    try {
+      const saved = localStorage.getItem('medaithon_live_photos')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const updated = parsed.filter((p) => String(p.id) !== String(photoId))
+        localStorage.setItem('medaithon_live_photos', JSON.stringify(updated))
+      }
+    } catch {
+      // ignore
+    }
+    return data
+  } catch (err) {
+    console.warn('Server delete failed, updating local cache:', err.message)
+    try {
+      const saved = localStorage.getItem('medaithon_live_photos')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const updated = parsed.filter((p) => String(p.id) !== String(photoId))
+        localStorage.setItem('medaithon_live_photos', JSON.stringify(updated))
+      }
+    } catch {
+      // ignore
+    }
+    return { success: true, deletedId: photoId, localOnly: true }
+  }
+}

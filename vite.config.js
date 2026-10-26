@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
                 res.end(JSON.stringify(data))
               }
 
-              if (req.method === 'POST') {
+              if (req.method === 'POST' || req.method === 'DELETE') {
                 let rawBody = ''
                 req.on('data', (chunk) => { rawBody += chunk })
                 req.on('end', async () => {
