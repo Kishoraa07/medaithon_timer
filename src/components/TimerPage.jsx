@@ -42,8 +42,8 @@ const TimerPage = ({ onNavigateToGallery }) => {
     adjustTime,
   } = useSyncedTimer();
 
-  const [mode, setMode] = useState('countdown'); // 'countdown' | 'elapsed'
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const mode = 'countdown';
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSakura, setShowSakura] = useState(true);
   const [dragonSpeech, setDragonSpeech] = useState(DRAGON_QUOTES[0]);
@@ -68,6 +68,7 @@ const TimerPage = ({ onNavigateToGallery }) => {
 
   // Japanese Bell / Singing Bowl Chime (Rin) on dragon interaction
   const playJapaneseChime = useCallback(() => {
+    if (!soundEnabled) return;
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
@@ -94,7 +95,7 @@ const TimerPage = ({ onNavigateToGallery }) => {
     } catch {
       // Audio fallback silent
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, soundEnabled]);
 
   // Live Clock Ticker
   useEffect(() => {
@@ -167,12 +168,12 @@ const TimerPage = ({ onNavigateToGallery }) => {
   }, 0);
 
   // SVG Circular progress gauge calculations
-  const gaugeRadius = 48;
+  const gaugeRadius = 38;
   const gaugeCircumference = 2 * Math.PI * gaugeRadius;
   const gaugeStrokeDashoffset = gaugeCircumference - (parseFloat(progressPercent) / 100) * gaugeCircumference;
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050508] text-white flex flex-col justify-between selection:bg-white selection:text-black font-['Inter'] overflow-x-hidden">
+    <div className="relative min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden w-full bg-[#050508] text-white flex flex-col justify-between selection:bg-white selection:text-black font-['Inter']">
       {/* 3D Molten Metal Background WebGL */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
         <MoltenMetal
@@ -203,74 +204,66 @@ const TimerPage = ({ onNavigateToGallery }) => {
       {showSakura && <SakuraField />}
 
       {/* Japanese Traditional Watermark Background Kanji */}
-      <div className="fixed -top-10 -right-10 pointer-events-none z-0 select-none opacity-[0.03] text-[280px] sm:text-[420px] font-serif leading-none text-white">
+      <div className="fixed -top-10 -right-10 pointer-events-none z-0 select-none opacity-[0.03] text-[240px] sm:text-[340px] font-serif leading-none text-white">
         龍
       </div>
-      <div className="fixed -bottom-20 -left-10 pointer-events-none z-0 select-none opacity-[0.02] text-[240px] sm:text-[380px] font-serif leading-none text-white">
+      <div className="fixed -bottom-20 -left-10 pointer-events-none z-0 select-none opacity-[0.02] text-[200px] sm:text-[300px] font-serif leading-none text-white">
         桜
       </div>
 
-      {/* Glowing Ambient Radial Backdrop with Sleek Cyan, Silver & Amber Glow (No Pink) */}
-      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[520px] bg-gradient-to-tr from-cyan-500/10 via-white/5 to-amber-500/10 blur-[140px] rounded-full pointer-events-none z-0 animate-pulse-glow" />
+      {/* Glowing Ambient Radial Backdrop */}
+      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[480px] bg-gradient-to-tr from-cyan-500/10 via-white/5 to-amber-500/10 blur-[130px] rounded-full pointer-events-none z-0 animate-pulse-glow" />
 
-      {/* TOP JAPANESE STYLED NAVBAR */}
-      <header className="relative z-20 w-full px-4 sm:px-8 py-3.5 border-b border-white/10 backdrop-blur-xl bg-black/45 flex flex-wrap items-center justify-between gap-4">
-        {/* MedAIthon Brand Info & Japanese Hanko Seal */}
-        <div className="flex items-center gap-3.5">
-          {/* Traditional Hanko Red Seal Stamp: [龍] */}
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-red-700/80 border-2 border-red-500/90 shadow-[0_0_15px_rgba(239,68,68,0.5)] flex items-center justify-center text-white font-serif font-black text-sm sm:text-base select-none shrink-0">
+      {/* ============================================================= */}
+      {/* 1. TOP JAPANESE STYLED NAVBAR (COMPACT & SLEEK)               */}
+      {/* ============================================================= */}
+      <header className="relative z-20 w-full px-3 sm:px-6 py-2 border-b border-white/10 backdrop-blur-xl bg-black/60 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        {/* Brand & Dynamic Live Status */}
+        <div className="flex items-center gap-3">
+          {/* Hanko Red Stamp: [龍] */}
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-700/80 border border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)] flex items-center justify-center text-white font-serif font-black text-xs sm:text-sm select-none shrink-0">
             龍
           </div>
 
-          <div className="relative group cursor-pointer">
+          <div className="flex items-center gap-2">
             <img
               src="/medaithon-logo-nav-footer.png"
               alt="MedAIthon Logo"
-              className="relative h-8 sm:h-10 w-auto object-contain drop-shadow-[0_2px_12px_rgba(255,255,255,0.4)]"
+              className="h-6 sm:h-7 w-auto object-contain drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)]"
             />
+            <span className="font-['Bebas_Neue'] text-base sm:text-lg tracking-wider text-white">
+              MEDAITHON 2026
+            </span>
           </div>
 
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-['Bebas_Neue'] text-lg sm:text-2xl tracking-wider text-white">
-                MEDAITHON 2026
-              </span>
-              <span className="text-[10px] font-serif tracking-widest text-gray-300 hidden sm:inline">
-                メダイソン
-              </span>
-              {/* Dynamic Status Badge */}
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider flex items-center gap-1.5 border transition-all ${
-                isRunning
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
-                  : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
-                {isRunning ? '● 進行中 RUNNING' : '⏸ 停止中 PAUSED'}
-              </span>
+          {/* Dynamic Status Badges */}
+          <div className="hidden sm:flex items-center gap-2">
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider flex items-center gap-1.5 border transition-all ${
+              isRunning
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+              {isRunning ? '● 50H COUNTDOWN RUNNING' : '⏸ PAUSED'}
+            </span>
 
-              {/* Multi-Device Serverless Sync Badge */}
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono border border-cyan-400/30 bg-cyan-500/10 text-cyan-200">
-                <span className={`w-1 h-1 rounded-full ${syncStatus === 'synced' ? 'bg-cyan-400' : 'bg-yellow-400 animate-ping'}`} />
-                {syncStatus === 'synced' ? 'VERCEL SYNCED' : 'LOCAL CACHE'}
-              </span>
-            </div>
-            <span className="text-[10px] sm:text-xs text-gray-400 font-light tracking-wide hidden sm:block">
-              龍の道 • 50時間極限ハッカソン (The Way of the Dragon • 50-Hour Hackathon)
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono border border-cyan-400/30 bg-cyan-500/10 text-cyan-200">
+              <span className={`w-1 h-1 rounded-full ${syncStatus === 'synced' ? 'bg-cyan-400' : 'bg-yellow-400 animate-ping'}`} />
+              {syncStatus === 'synced' ? 'VERCEL SYNCED' : 'LOCAL CACHE'}
             </span>
           </div>
         </div>
 
-        {/* Live Local Clock & Quick Toggles */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Live Clock & Navigation Actions */}
+        <div className="flex items-center gap-2">
           {/* Link to Realtime Gallery Page */}
           {onNavigateToGallery && (
             <button
               onClick={onNavigateToGallery}
               title="View Real-Time Live Event Photo Feed"
-              className="relative group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 hover:border-white/50 text-xs font-['Bebas_Neue'] tracking-wider text-white backdrop-blur-xl shadow-[0_4px_15px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.3)] transition-all cursor-pointer hover:scale-102"
+              className="relative group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/50 text-cyan-200 text-xs font-semibold backdrop-blur-xl shadow-[0_0_12px_rgba(6,182,212,0.3)] transition-all cursor-pointer hover:scale-102"
             >
-              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping" />
               <span>LIVE PHOTOS (実況写真)</span>
             </button>
           )}
@@ -279,636 +272,479 @@ const TimerPage = ({ onNavigateToGallery }) => {
           <button
             onClick={() => setShowSakura(!showSakura)}
             title={showSakura ? 'Hide Falling Flowers' : 'Show Falling Flowers'}
-            className={`px-2.5 py-1.5 rounded-xl border text-xs font-serif flex items-center gap-1.5 transition-all cursor-pointer ${
-              showSakura
-                ? 'bg-white/10 border-white/30 text-white shadow-[0_0_12px_rgba(255,255,255,0.2)]'
-                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-            }`}
+            className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 text-xs transition-all cursor-pointer"
           >
-            <span>🌸</span>
-            <span className="text-[11px] hidden sm:inline">花吹雪 {showSakura ? 'ON' : 'OFF'}</span>
+            🌸
           </button>
 
-          {/* Local IST Clock */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 font-mono text-xs text-gray-300">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span>IST: {currentTime.toLocaleTimeString()}</span>
-          </div>
-
-          {/* Mode Switch (Countdown / Elapsed) */}
-          <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10">
-            <button
-              onClick={() => setMode('countdown')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                mode === 'countdown'
-                  ? 'bg-white text-black shadow-md'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              残り時間
-            </button>
-            <button
-              onClick={() => setMode('elapsed')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                mode === 'elapsed'
-                  ? 'bg-white text-black shadow-md'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              経過時間
-            </button>
-          </div>
-
-          {/* Sound Toggle */}
+          {/* Sound Chimes Toggle */}
           <button
-            onClick={() => {
-              getAudioContext();
-              setSoundEnabled(!soundEnabled);
-            }}
-            title={soundEnabled ? 'Mute Audio (M)' : 'Enable Audio Chimes (M)'}
-            className={`p-2.5 rounded-xl border transition-all ${
-              soundEnabled
-                ? 'bg-cyan-500/20 border-cyan-400/50 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]'
-                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-            }`}
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            title={soundEnabled ? 'Mute Chimes (M)' : 'Enable Chimes (M)'}
+            className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 text-xs transition-all cursor-pointer"
           >
-            {soundEnabled ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-              </svg>
-            )}
+            {soundEnabled ? '🔔' : '🔕'}
           </button>
 
           {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit Fullscreen (F)' : 'Enter Fullscreen (F)'}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-['Bebas_Neue'] tracking-wider transition-all cursor-pointer backdrop-blur-xl ${
+            className={`p-1.5 sm:px-2.5 sm:py-1 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
               isFullscreen
-                ? 'bg-amber-500/20 border-amber-400/50 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-                : 'bg-white/10 hover:bg-white/20 border-white/25 hover:border-white/50 text-white shadow-sm'
+                ? 'bg-amber-500/20 border-amber-400/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+                : 'bg-white/10 hover:bg-white/20 border-white/25 text-white'
             }`}
           >
-            {isFullscreen ? (
-              <>
-                <svg className="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 9L4 4m0 0l5 0m-5 0l0 5m11-5l5 0m0 0l-5 5m5-5l0 5m-5 11l5 0m0 0l-5-5m5 5l0-5M4 15l5 0m-5 0l0 5m0-5l5 5" />
-                </svg>
-                <span>EXIT FULLSCREEN</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0 0l-5-5m-6 16H4m0 0v-4m0 4l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                </svg>
-                <span>FULLSCREEN (全画面)</span>
-              </>
-            )}
+            {isFullscreen ? 'EXIT (F)' : 'FULLSCREEN (F)'}
           </button>
+
+          {/* Local IST Clock */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 font-mono text-xs text-gray-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+            <span>
+              {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* MAIN TIMER ARENA */}
-      <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 md:py-6 flex flex-col justify-between">
-        {/* Japanese Calligraphy Subtitle & Top Banner */}
-        <div className="flex flex-col items-center text-center mb-2 sm:mb-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-cyan-500/10 via-white/5 to-amber-500/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.08)] backdrop-blur-md mb-1.5">
-            <span className="font-serif text-cyan-300 text-xs sm:text-sm">⚔️ 鍛錬の刻</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="font-['Inter'] text-[11px] sm:text-xs font-semibold tracking-wider text-gray-200 uppercase">
-              The 50-Hour Dragon Crucible
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="font-serif text-amber-300 text-xs sm:text-sm">五十時間</span>
+      {/* ============================================================= */}
+      {/* 2. MAIN TIMER ARENA (FITS 100% IN VIEWPORT WITHOUT SCROLLING) */}
+      {/* ============================================================= */}
+      <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1700px] mx-auto px-3 sm:px-5 lg:px-6 py-2 sm:py-3 flex flex-col justify-between lg:overflow-hidden gap-2 sm:gap-3">
+        
+        {/* TOP ROW: EVENT BRAND BANNER + LIVE DRAGON WISDOM + STATS */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 px-3 py-1.5 rounded-2xl bg-black/60 border border-white/15 backdrop-blur-xl shrink-0">
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/medaithon-logo.png"
+              alt="MedAIthon 2026"
+              className="h-7 sm:h-8 w-auto object-contain drop-shadow-[0_4px_12px_rgba(255,255,255,0.4)]"
+            />
+            <div className="flex items-center gap-2">
+              <span className="font-['Bebas_Neue'] text-lg sm:text-xl text-white tracking-wider leading-none">
+                THE 50-HOUR DRAGON CRUCIBLE
+              </span>
+              <span className="font-serif text-xs text-amber-300 hidden sm:inline">
+                鍛錬の刻
+              </span>
+            </div>
           </div>
 
-          <h1 className="font-['Bebas_Neue'] text-2xl sm:text-4xl md:text-5xl lg:text-5xl tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-100 to-gray-500 leading-tight drop-shadow-[0_4px_30px_rgba(255,255,255,0.3)]">
-            WHERE CODE MEETS THE WAY OF THE DRAGON
-          </h1>
-          <p className="text-xs text-gray-400 max-w-xl font-light">
-            50 hours of relentless engineering, hardware innovation, and clinical intelligence forging the future of medicine.
-          </p>
+          {/* Live Dragon Quote Ticker */}
+          <div
+            onClick={handleDragonClick}
+            className="hidden md:flex items-center gap-2 px-3 py-1 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-gray-300 max-w-lg cursor-pointer transition-colors"
+            title="Click to receive new dragon quote"
+          >
+            <span className="text-amber-400">🐉</span>
+            <span className="truncate italic font-light">{dragonSpeech}</span>
+          </div>
+
+          {/* Event Crucible Chips */}
+          <div className="flex items-center gap-2 text-xs font-mono shrink-0">
+            <span className="px-2.5 py-0.5 rounded-lg bg-white/5 border border-white/10 text-gray-300">
+              <strong className="text-white">50h</strong> Crucible
+            </span>
+            <span className="px-2.5 py-0.5 rounded-lg bg-white/5 border border-white/10 text-gray-300">
+              <strong className="text-cyan-300">200+</strong> Warriors
+            </span>
+            <span className="px-2.5 py-0.5 rounded-lg bg-white/5 border border-white/10 text-gray-300">
+              <strong className="text-amber-300">₹1,00,000+</strong> Glory
+            </span>
+          </div>
         </div>
 
-        {/* CENTER GRID: ENHANCED TIMER & SERENE MEDI DRAGON */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center flex-1 my-auto">
-          {/* LEFT 7 COLS: MEDAITHON LOGO ABOVE TIMER & GIANT DIGITAL CLOCK */}
-          <div className="lg:col-span-7 flex flex-col items-center lg:items-start space-y-3">
-            
-            {/* MEDAITHON LOGO DIRECTLY ABOVE THE TIMER */}
-            <div className="w-full flex justify-center lg:justify-start">
-              <div className="relative group">
-                {/* Backlight ambient halo */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/20 via-white/10 to-amber-500/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-80 transition duration-500 pointer-events-none" />
-                <img
-                  src="/medaithon-logo.png"
-                  alt="MedAIthon 2026"
-                  className="relative h-10 sm:h-12 md:h-14 w-auto object-contain filter drop-shadow-[0_8px_25px_rgba(255,255,255,0.3)]"
-                />
-              </div>
-            </div>
+        {/* =========================================================== */}
+        {/* CENTER ARENA: TIMER DISPLAY + CONTROLS + MEDI DRAGON        */}
+        {/* =========================================================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-5 items-center flex-1 min-h-0 my-auto">
+          
+          {/* LEFT 7 COLS: TIMER ENGINE, CIRCULAR GAUGE & GLASS CONTROLS */}
+          <div className="lg:col-span-7 flex flex-col justify-between h-full rounded-3xl border border-white/20 bg-black/75 backdrop-blur-2xl p-3.5 sm:p-5 shadow-[0_15px_40px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.25)] relative overflow-hidden">
+            {/* Top Katana Shimmer Line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-80 pointer-events-none" />
 
-            {/* The Enhanced Time Card Group with Active Running Glow (Clean Silver / Cyan / Amber - Zero Pink) */}
-            <div className="w-full flex flex-col items-center">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 w-full">
-                {/* Digit Cards Group */}
-                <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 flex-1 w-full sm:w-auto">
-                  {/* Hours Box */}
-                  <div className="relative group flex-1 max-w-[115px] sm:max-w-[145px] md:max-w-[175px]">
-                    {/* Active Running Shimmer Sweep */}
-                    {isRunning && (
-                      <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/25 via-white/20 to-cyan-500/25 rounded-3xl blur-md opacity-60 animate-sakura-sweep" />
-                    )}
-                    <div className={`relative flex flex-col items-center justify-center bg-black/75 border rounded-2xl sm:rounded-3xl p-3 sm:p-5 backdrop-blur-2xl transition-all duration-500 overflow-hidden ${
-                      isRunning
-                        ? 'border-white/35 shadow-[0_15px_45px_rgba(255,255,255,0.15),0_0_20px_rgba(6,182,212,0.2),inset_0_1px_2px_rgba(255,255,255,0.4)] animate-timer-running'
-                        : 'border-white/15 shadow-[0_15px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]'
-                    }`}>
-                      {/* Top Katana Shimmer Line */}
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/90 to-transparent opacity-90" />
-                      
-                      {/* Japanese Kanji Accent: 時 (Hours) */}
-                      <div className="flex items-center gap-1 mb-1">
-                        <span className="font-serif text-xs sm:text-sm text-white font-bold">
-                          時
-                        </span>
-                        <span className="text-[9px] font-mono text-gray-400">JIKAN</span>
-                      </div>
-
-                      {/* Main Digits */}
-                      <span className={`font-['Bebas_Neue'] text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-none tracking-tight transition-colors duration-300 ${
-                        isRunning ? 'text-white drop-shadow-[0_4px_30px_rgba(255,255,255,0.5)]' : 'text-gray-200'
-                      }`}>
-                        {hours.toString().padStart(2, '0')}
-                      </span>
-
-                      <span className="font-['Inter'] text-[9px] sm:text-[11px] text-gray-400 font-bold tracking-[0.25em] uppercase mt-2">
-                        HOURS
-                      </span>
+            {/* Time Cards & Circular Completion Gauge */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 my-auto">
+              {/* Digit Cards Group */}
+              <div className="flex items-center justify-center gap-2 sm:gap-3 flex-1 w-full">
+                {/* Hours Box */}
+                <div className="relative group flex-1 max-w-[125px] sm:max-w-[155px]">
+                  {isRunning && (
+                    <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/25 via-white/20 to-cyan-500/25 rounded-2xl blur-sm opacity-60 animate-sakura-sweep" />
+                  )}
+                  <div className={`relative flex flex-col items-center justify-center bg-black/85 border rounded-2xl p-2.5 sm:p-3.5 backdrop-blur-xl transition-all duration-300 ${
+                    isRunning
+                      ? 'border-white/35 shadow-[0_10px_30px_rgba(255,255,255,0.15),inset_0_1px_1px_rgba(255,255,255,0.35)]'
+                      : 'border-white/15'
+                  }`}>
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <span className="font-serif text-[11px] sm:text-xs text-white font-bold">時</span>
+                      <span className="text-[8px] font-mono text-gray-400">HRS</span>
                     </div>
+                    <span className="font-['Bebas_Neue'] text-5xl sm:text-7xl lg:text-7xl xl:text-8xl leading-none tracking-tight text-white drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
+                      {hours.toString().padStart(2, '0')}
+                    </span>
+                    <span className="font-['Inter'] text-[8px] sm:text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-1">
+                      HOURS
+                    </span>
                   </div>
+                </div>
 
-                  {/* Pulsing Colon with Heartbeat Pulse */}
-                  <div className="flex flex-col gap-2.5 pb-6">
-                    <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all ${
-                      isRunning
-                        ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,1)] animate-ping'
-                        : 'bg-white/40'
-                    }`} />
-                    <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all ${
-                      isRunning
-                        ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,1)]'
-                        : 'bg-white/40'
-                    }`} />
-                  </div>
+                <span className={`text-white text-2xl sm:text-3xl font-bold ${isRunning ? 'animate-pulse' : 'opacity-40'}`}>:</span>
 
-                  {/* Minutes Box */}
-                  <div className="relative group flex-1 max-w-[115px] sm:max-w-[145px] md:max-w-[175px]">
-                    {isRunning && (
-                      <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/25 via-white/20 to-cyan-500/25 rounded-3xl blur-md opacity-60 animate-sakura-sweep" />
-                    )}
-                    <div className={`relative flex flex-col items-center justify-center bg-black/75 border rounded-2xl sm:rounded-3xl p-3 sm:p-5 backdrop-blur-2xl transition-all duration-500 overflow-hidden ${
-                      isRunning
-                        ? 'border-white/35 shadow-[0_15px_45px_rgba(255,255,255,0.15),0_0_20px_rgba(6,182,212,0.2),inset_0_1px_2px_rgba(255,255,255,0.4)] animate-timer-running'
-                        : 'border-white/15 shadow-[0_15px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]'
-                    }`}>
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent opacity-90" />
-                      
-                      {/* Japanese Kanji Accent: 分 (Minutes) */}
-                      <div className="flex items-center gap-1 mb-1">
-                        <span className="font-serif text-xs sm:text-sm text-cyan-300 font-bold">
-                          分
-                        </span>
-                        <span className="text-[9px] font-mono text-gray-400">FUN</span>
-                      </div>
-
-                      <span className={`font-['Bebas_Neue'] text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-none tracking-tight transition-colors duration-300 ${
-                        isRunning ? 'text-white drop-shadow-[0_4px_30px_rgba(255,255,255,0.5)]' : 'text-gray-200'
-                      }`}>
-                        {minutes.toString().padStart(2, '0')}
-                      </span>
-
-                      <span className="font-['Inter'] text-[9px] sm:text-[11px] text-gray-400 font-bold tracking-[0.25em] uppercase mt-2">
-                        MINUTES
-                      </span>
+                {/* Minutes Box */}
+                <div className="relative group flex-1 max-w-[125px] sm:max-w-[155px]">
+                  {isRunning && (
+                    <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/25 via-white/20 to-cyan-500/25 rounded-2xl blur-sm opacity-60 animate-sakura-sweep" />
+                  )}
+                  <div className={`relative flex flex-col items-center justify-center bg-black/85 border rounded-2xl p-2.5 sm:p-3.5 backdrop-blur-xl transition-all duration-300 ${
+                    isRunning
+                      ? 'border-cyan-400/40 shadow-[0_10px_30px_rgba(6,182,212,0.2),inset_0_1px_1px_rgba(255,255,255,0.35)]'
+                      : 'border-white/15'
+                  }`}>
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <span className="font-serif text-[11px] sm:text-xs text-cyan-300 font-bold">分</span>
+                      <span className="text-[8px] font-mono text-gray-400">MINS</span>
                     </div>
+                    <span className="font-['Bebas_Neue'] text-5xl sm:text-7xl lg:text-7xl xl:text-8xl leading-none tracking-tight text-white drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
+                      {minutes.toString().padStart(2, '0')}
+                    </span>
+                    <span className="font-['Inter'] text-[8px] sm:text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-1">
+                      MINUTES
+                    </span>
                   </div>
+                </div>
 
-                  {/* Pulsing Colon */}
-                  <div className="flex flex-col gap-2.5 pb-6">
-                    <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all ${
-                      isRunning
-                        ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,1)] animate-ping'
-                        : 'bg-white/40'
-                    }`} />
-                    <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all ${
-                      isRunning
-                        ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,1)]'
-                        : 'bg-white/40'
-                    }`} />
-                  </div>
+                <span className={`text-white text-2xl sm:text-3xl font-bold ${isRunning ? 'animate-pulse' : 'opacity-40'}`}>:</span>
 
-                  {/* Seconds Box with Active Heartbeat Punch */}
-                  <div className="relative group flex-1 max-w-[115px] sm:max-w-[145px] md:max-w-[175px]">
-                    {isRunning && (
-                      <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-white/20 to-amber-500/25 rounded-3xl blur-md opacity-60 animate-sakura-sweep" />
-                    )}
-                    <div className={`relative flex flex-col items-center justify-center bg-black/75 border rounded-2xl sm:rounded-3xl p-3 sm:p-5 backdrop-blur-2xl transition-all duration-500 overflow-hidden ${
-                      isRunning
-                        ? 'border-amber-400/45 shadow-[0_15px_45px_rgba(245,158,11,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] animate-timer-running'
-                        : 'border-white/15 shadow-[0_15px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]'
-                    }`}>
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-300 to-transparent opacity-90" />
-                      
-                      {/* Japanese Kanji Accent: 秒 (Seconds) */}
-                      <div className="flex items-center gap-1 mb-1">
-                        <span className="font-serif text-xs sm:text-sm text-amber-300 font-bold">
-                          秒
-                        </span>
-                        <span className="text-[9px] font-mono text-gray-400">BYO</span>
-                      </div>
-
-                      <span className={`font-['Bebas_Neue'] text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-none tracking-tight transition-colors duration-300 ${
-                        isRunning ? 'text-white drop-shadow-[0_4px_30px_rgba(255,215,0,0.5)]' : 'text-gray-200'
-                      }`}>
+                {/* Seconds Box with Tenths */}
+                <div className="relative group flex-1 max-w-[125px] sm:max-w-[155px]">
+                  {isRunning && (
+                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-white/20 to-amber-500/25 rounded-2xl blur-sm opacity-60 animate-sakura-sweep" />
+                  )}
+                  <div className={`relative flex flex-col items-center justify-center bg-black/85 border rounded-2xl p-2.5 sm:p-3.5 backdrop-blur-xl transition-all duration-300 ${
+                    isRunning
+                      ? 'border-amber-400/45 shadow-[0_10px_30px_rgba(245,158,11,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]'
+                      : 'border-white/15'
+                  }`}>
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <span className="font-serif text-[11px] sm:text-xs text-amber-300 font-bold">秒</span>
+                      <span className="text-[8px] font-mono text-gray-400">SECS</span>
+                    </div>
+                    <div className="flex items-baseline justify-center">
+                      <span className="font-['Bebas_Neue'] text-5xl sm:text-7xl lg:text-7xl xl:text-8xl leading-none tracking-tight text-white drop-shadow-[0_4px_20px_rgba(255,215,0,0.4)]">
                         {seconds.toString().padStart(2, '0')}
                       </span>
-
-                      <span className="font-['Inter'] text-[9px] sm:text-[11px] text-gray-400 font-bold tracking-[0.25em] uppercase mt-2 flex items-center gap-1">
-                        SECONDS
-                        <span className="font-mono text-[9px] text-amber-400/90">.{tenths}</span>
+                      <span className="font-mono text-xs sm:text-sm text-amber-300/90 ml-0.5 font-bold">
+                        .{tenths}
                       </span>
                     </div>
-                  </div>
-                </div>
-
-                {/* Circular Japanese Radial Gauge for Hackathon Progress */}
-                <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0">
-                  <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 110 110">
-                    <circle
-                      cx="55"
-                      cy="55"
-                      r={gaugeRadius}
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      className="text-white/10"
-                      fill="transparent"
-                    />
-                    <circle
-                      cx="55"
-                      cy="55"
-                      r={gaugeRadius}
-                      stroke="url(#progressGaugeGradientClean)"
-                      strokeWidth="6"
-                      strokeDasharray={gaugeCircumference}
-                      strokeDashoffset={gaugeStrokeDashoffset}
-                      strokeLinecap="round"
-                      fill="transparent"
-                      className="transition-all duration-500"
-                    />
-                    <defs>
-                      <linearGradient id="progressGaugeGradientClean" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#06b6d4" />
-                        <stop offset="50%" stopColor="#ffffff" />
-                        <stop offset="100%" stopColor="#f59e0b" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute flex flex-col items-center justify-center text-center">
-                    <span className="font-serif text-[10px] text-cyan-300 leading-none mb-0.5">
-                      進捗
-                    </span>
-                    <span className="font-['Bebas_Neue'] text-xl sm:text-2xl text-white leading-none">
-                      {progressPercent}%
-                    </span>
-                    <span className="text-[8px] font-mono text-gray-400 uppercase tracking-wider">
-                      Done
+                    <span className="font-['Inter'] text-[8px] sm:text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-1">
+                      SECONDS
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Progress Summary Pill */}
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5 text-xs font-mono text-gray-300">
-                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
-                  <span className="text-white font-serif">目標:</span>
-                  <strong className="text-white">50h 00m 00s</strong>
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
-                  <span className="text-cyan-300 font-serif">経過:</span>
-                  <strong className="text-cyan-300">{Math.floor(elapsedSeconds / 3600)}h {Math.floor((elapsedSeconds % 3600) / 60)}m</strong>
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
-                  <span className="text-amber-300 font-serif">残り:</span>
-                  <strong className="text-amber-300">{hours}h {minutes}m {seconds}s</strong>
-                </span>
+              {/* Circular Japanese Radial Gauge */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 90 90">
+                  <circle
+                    cx="45"
+                    cy="45"
+                    r={gaugeRadius}
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    className="text-white/10"
+                    fill="transparent"
+                  />
+                  <circle
+                    cx="45"
+                    cy="45"
+                    r={gaugeRadius}
+                    stroke="url(#progressGaugeGradientClean)"
+                    strokeWidth="5"
+                    strokeDasharray={gaugeCircumference}
+                    strokeDashoffset={gaugeStrokeDashoffset}
+                    strokeLinecap="round"
+                    fill="transparent"
+                    className="transition-all duration-500"
+                  />
+                  <defs>
+                    <linearGradient id="progressGaugeGradientClean" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#06b6d4" />
+                      <stop offset="50%" stopColor="#ffffff" />
+                      <stop offset="100%" stopColor="#f59e0b" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="font-serif text-[9px] text-cyan-300 leading-none">進捗</span>
+                  <span className="font-['Bebas_Neue'] text-lg sm:text-xl text-white leading-none">
+                    {progressPercent}%
+                  </span>
+                  <span className="text-[7px] font-mono text-gray-400 uppercase tracking-wider">
+                    Done
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Linear Progress Bar with Japanese Torii Accent */}
-            <div className="w-full space-y-1.5">
-              <div className="flex justify-between text-xs text-gray-400 font-mono">
+            {/* Progress Summary Pill */}
+            <div className="my-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-gray-300 px-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
+                <span className="text-white font-serif">目標:</span>
+                <strong className="text-white">50h 00m 00s</strong>
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
+                <span className="text-cyan-300 font-serif">経過:</span>
+                <strong className="text-cyan-300">{Math.floor(elapsedSeconds / 3600)}h {Math.floor((elapsedSeconds % 3600) / 60)}m</strong>
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5">
+                <span className="text-amber-300 font-serif">残り:</span>
+                <strong className="text-amber-300">{hours}h {minutes}m {seconds}s</strong>
+              </span>
+            </div>
+
+            {/* Linear Milestone Progress Bar */}
+            <div className="w-full space-y-1 my-1">
+              <div className="flex justify-between text-[11px] text-gray-400 font-mono">
                 <span className="flex items-center gap-1">
                   <span className="text-amber-400">⛩</span>
                   <span>00h 合戦開始</span>
                 </span>
                 <span className="text-white font-medium flex items-center gap-1">
                   <span className="text-gray-300 font-serif">現在関門:</span>
-                  <strong className="text-cyan-300">{MILESTONES[currentMilestoneIndex].kanji} ({MILESTONES[currentMilestoneIndex].label})</strong>
+                  <strong className="text-cyan-300">
+                    {MILESTONES[currentMilestoneIndex].kanji} ({MILESTONES[currentMilestoneIndex].label})
+                  </strong>
                 </span>
                 <span>50h 天下統一 🏆</span>
               </div>
-              <div className="relative w-full h-3 bg-white/10 rounded-full overflow-hidden border border-white/15 p-[1px]">
+              <div className="relative w-full h-2.5 bg-white/10 rounded-full overflow-hidden border border-white/15 p-[0.5px]">
                 <div
-                  className="h-full bg-gradient-to-r from-cyan-400 via-white to-amber-400 rounded-full transition-all duration-500 shadow-[0_0_15px_rgba(6,182,212,0.6)]"
+                  className="h-full bg-gradient-to-r from-cyan-400 via-white to-amber-400 rounded-full transition-all duration-500 shadow-[0_0_12px_rgba(6,182,212,0.6)]"
                   style={{ width: `${Math.min(100, Math.max(0, parseFloat(progressPercent)))}%` }}
                 />
               </div>
             </div>
 
-            {/* PRIMARY INTERACTIVE CONTROLS */}
-            <div className="w-full flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-1">
-              {/* Play / Pause Button - Translucent Glassmorphism Look */}
-              <button
-                onClick={togglePlayPause}
-                className={`relative group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-['Bebas_Neue'] text-base sm:text-lg tracking-wider text-white backdrop-blur-xl border transition-all duration-300 cursor-pointer overflow-hidden ${
-                  isRunning
-                    ? 'bg-white/10 hover:bg-white/20 border-white/30 hover:border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.5),inset_0_1px_2px_rgba(255,255,255,0.35)] hover:scale-102 active:scale-98'
-                    : 'bg-white/5 hover:bg-white/15 border-white/20 hover:border-white/40 shadow-[0_8px_25px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98'
-                }`}
-              >
-                {/* Glass top specular highlight reflection line */}
-                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none" />
+            {/* PRIMARY INTERACTIVE CONTROLS (FROSTED GLASSMORPHISM) */}
+            <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                {/* Play / Pause Button */}
+                <button
+                  onClick={togglePlayPause}
+                  className="relative group flex items-center gap-2 px-4 py-2 rounded-xl font-['Bebas_Neue'] text-base tracking-wider text-white backdrop-blur-xl border border-white/25 hover:border-white/50 bg-white/10 hover:bg-white/20 shadow-[0_8px_25px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.35)] transition-all cursor-pointer hover:scale-102"
+                >
+                  <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none" />
+                  {isRunning ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                        <rect x="6" y="4" width="4" height="16" rx="1" />
+                        <rect x="14" y="4" width="4" height="16" rx="1" />
+                      </svg>
+                      <span>PAUSE TIMER (停止)</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <span>START 50H (開始)</span>
+                    </>
+                  )}
+                </button>
 
-                {isRunning ? (
-                  <>
-                    <svg className="w-4 h-4 fill-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" viewBox="0 0 24 24">
-                      <rect x="6" y="4" width="4" height="16" rx="1" />
-                      <rect x="14" y="4" width="4" height="16" rx="1" />
-                    </svg>
-                    <span className="drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)]">PAUSE TIMER (停止)</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 fill-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <span className="drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)]">START 50H COUNTDOWN (開始)</span>
-                  </>
-                )}
-              </button>
+                {/* Reset Button */}
+                <button
+                  onClick={() => resetTimer(TOTAL_50_HOURS_SECONDS)}
+                  title="Reset to 50:00:00"
+                  className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
+                >
+                  Reset 50h
+                </button>
 
-              {/* Reset Button */}
-              <button
-                onClick={() => resetTimer(TOTAL_50_HOURS_SECONDS)}
-                title="Reset to 50:00:00 (Shift+R)"
-                className="flex items-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 hover:border-white/30 text-white font-['Inter'] text-xs sm:text-sm font-semibold transition-all cursor-pointer backdrop-blur-md"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>初期化 Reset 50h</span>
-              </button>
-
-              {/* Quick Adjust Buttons */}
-              <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10">
+                {/* Adjust +/- */}
                 <button
                   onClick={() => adjustTime(3600)}
                   title="Add 1 Hour"
-                  className="px-2.5 py-2 rounded-xl text-xs font-mono font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  className="px-2.5 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
                 >
                   +1h
                 </button>
                 <button
                   onClick={() => adjustTime(-3600)}
                   title="Subtract 1 Hour"
-                  className="px-2.5 py-2 rounded-xl text-xs font-mono font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  className="px-2.5 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
                 >
                   -1h
                 </button>
+              </div>
+
+              {/* Presets Pills */}
+              <div className="flex items-center gap-1.5 text-xs font-mono text-gray-400">
                 <button
-                  onClick={() => adjustTime(900)}
-                  title="Add 15 Minutes"
-                  className="px-2.5 py-2 rounded-xl text-xs font-mono font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  onClick={() => resetTimer(50 * 3600)}
+                  className={`px-2 py-1 rounded-lg border transition-all cursor-pointer text-[10px] ${
+                    totalSeconds === 50 * 3600 ? 'bg-white/20 border-white/40 text-white' : 'bg-white/5 border-white/10'
+                  }`}
                 >
-                  +15m
+                  50h (本戦)
                 </button>
                 <button
-                  onClick={() => adjustTime(-900)}
-                  title="Subtract 15 Minutes"
-                  className="px-2.5 py-2 rounded-xl text-xs font-mono font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  onClick={() => resetTimer(24 * 3600)}
+                  className={`px-2 py-1 rounded-lg border transition-all cursor-pointer text-[10px] ${
+                    totalSeconds === 24 * 3600 ? 'bg-white/20 border-white/40 text-white' : 'bg-white/5 border-white/10'
+                  }`}
                 >
-                  -15m
+                  24h
+                </button>
+                <button
+                  onClick={() => resetTimer(4 * 3600)}
+                  className={`px-2 py-1 rounded-lg border transition-all cursor-pointer text-[10px] ${
+                    totalSeconds === 4 * 3600 ? 'bg-white/20 border-white/40 text-white' : 'bg-white/5 border-white/10'
+                  }`}
+                >
+                  4h
                 </button>
               </div>
             </div>
-
-            {/* Presets Row */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-gray-400">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-gray-300 font-serif">設定:</span>
-              <button
-                onClick={() => resetTimer(50 * 3600)}
-                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                  totalSeconds === 50 * 3600
-                    ? 'bg-white/20 border-white/40 text-white font-semibold shadow-sm'
-                    : 'bg-white/5 border-white/10 hover:border-white/20 text-gray-300'
-                }`}
-              >
-                50 Hours (本戦)
-              </button>
-              <button
-                onClick={() => resetTimer(24 * 3600)}
-                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                  totalSeconds === 24 * 3600
-                    ? 'bg-white/20 border-white/40 text-white font-semibold'
-                    : 'bg-white/5 border-white/10 hover:border-white/20 text-gray-300'
-                }`}
-              >
-                24 Hours (半日)
-              </button>
-              <button
-                onClick={() => resetTimer(12 * 3600)}
-                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                  totalSeconds === 12 * 3600
-                    ? 'bg-white/20 border-white/40 text-white font-semibold'
-                    : 'bg-white/5 border-white/10 hover:border-white/20 text-gray-300'
-                }`}
-              >
-                12 Hours (夜戦)
-              </button>
-              <button
-                onClick={() => resetTimer(4 * 3600)}
-                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                  totalSeconds === 4 * 3600
-                    ? 'bg-white/20 border-white/40 text-white font-semibold'
-                    : 'bg-white/5 border-white/10 hover:border-white/20 text-gray-300'
-                }`}
-              >
-                Final 4 Hours (決戦)
-              </button>
-              <button
-                onClick={() => resetTimer(300)}
-                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                  totalSeconds === 300
-                    ? 'bg-white/20 border-white/40 text-white font-semibold'
-                    : 'bg-white/5 border-white/10 hover:border-white/20 text-gray-300'
-                }`}
-              >
-                5m Pitch Demo (発表)
-              </button>
-            </div>
           </div>
 
-          {/* RIGHT 5 COLS: SERENE & MAJESTIC MEDI DRAGON (STRICTLY NO SHAKING) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
-            {/* Dragon Speech / Motivational Bubble */}
-            <div className="w-full max-w-md mb-3 relative z-20">
-              <div className="relative bg-black/80 border border-white/20 rounded-2xl p-4 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)]">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-amber-400 flex items-center justify-center text-sm font-bold text-black shrink-0 shadow-md">
+          {/* RIGHT 5 COLS: SERENE MEDI DRAGON (STRICTLY NO SHAKE / NO TILT) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-between h-full rounded-3xl border border-white/20 bg-black/75 backdrop-blur-2xl p-3.5 sm:p-5 shadow-[0_15px_40px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.25)] relative overflow-hidden">
+            {/* Top Katana Shimmer Line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-80 pointer-events-none" />
+
+            {/* Dragon Speech Card */}
+            <div className="w-full relative z-20 shrink-0">
+              <div className="relative bg-black/80 border border-white/20 rounded-2xl p-2.5 sm:p-3 backdrop-blur-xl shadow-md">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-400 to-amber-400 flex items-center justify-center text-xs font-bold text-black shrink-0 shadow-md">
                     🐉
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-serif text-xs sm:text-sm tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-                        <span>守護龍 MEDI DRAGON</span>
-                        <span className="text-[10px] text-gray-400 font-mono">神託</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="font-serif text-xs text-amber-300 font-bold">
+                        守護龍 MEDI DRAGON
                       </span>
-                      <span className="text-[10px] font-mono text-gray-400">
-                        CLICK FOR BLESSING
+                      <span className="text-[9px] font-mono text-gray-400">
+                        TAP TO BLESS
                       </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-light">
+                    <p className="text-xs text-gray-200 leading-snug font-light line-clamp-2">
                       "{dragonSpeech}"
                     </p>
                   </div>
                 </div>
-                {/* Speech bubble arrow pointer */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/80 border-b border-r border-white/20 rotate-45" />
               </div>
             </div>
 
-            {/* Interactive Medi Dragon Character - STRICTLY NO SHAKE / NO TILT / NO JITTER */}
+            {/* Interactive Medi Dragon Mascot - SMOOTH VERTICAL FLOAT ONLY */}
             <div
               onClick={handleDragonClick}
-              className="relative group cursor-pointer flex items-center justify-center py-2 select-none"
-              title="Click Medi Dragon to receive a tranquil blessing & quote"
+              className="relative group cursor-pointer flex items-center justify-center my-auto select-none py-1"
+              title="Click Medi Dragon to receive a tranquil blessing"
             >
-              {/* Serene Dragon Aura - Pulsing celestial glow (Smooth breathing, no shaking) */}
-              <div className={`absolute w-72 sm:w-80 md:w-96 h-72 sm:h-80 md:h-96 rounded-full bg-gradient-to-tr from-cyan-500/20 via-white/10 to-amber-500/20 blur-[55px] pointer-events-none transition-all duration-700 ${
+              {/* Serene Dragon Aura Glow */}
+              <div className={`absolute w-48 sm:w-60 md:w-72 h-48 sm:h-60 md:h-72 rounded-full bg-gradient-to-tr from-cyan-500/20 via-white/10 to-amber-500/20 blur-[50px] pointer-events-none transition-all duration-700 ${
                 dragonAuraGlow ? 'opacity-90 scale-110' : 'animate-dragon-aura'
               }`} />
 
-              {/* Japanese Zen Garden Circular Rings (Smooth constant rotation, no shaking) */}
-              <div className="absolute w-80 sm:w-96 h-80 sm:h-96 rounded-full border border-dashed border-white/15 animate-radar pointer-events-none" />
-              <div className="absolute w-72 sm:w-84 h-72 sm:h-84 rounded-full border border-white/10 pointer-events-none" />
+              {/* Japanese Zen Garden Circular Rings */}
+              <div className="absolute w-56 sm:w-68 h-56 sm:h-68 rounded-full border border-dashed border-white/15 animate-radar pointer-events-none" />
 
-              {/* Medi Dragon Image - Smooth vertical floating only, ZERO rotation, ZERO shake */}
+              {/* Medi Dragon Image - Smooth vertical floating only, 0 rotation, 0 shake */}
               <div className="relative z-10">
                 <img
                   src="/images/medi-dragon.png"
                   alt="Medi Dragon Mascot"
-                  className="w-64 sm:w-72 md:w-80 lg:w-[340px] xl:w-[380px] object-contain filter drop-shadow-[0_20px_45px_rgba(255,255,255,0.35)] animate-dragon-float"
+                  className="max-h-[26vh] lg:max-h-[30vh] xl:max-h-[34vh] w-auto object-contain filter drop-shadow-[0_15px_35px_rgba(255,255,255,0.35)] animate-dragon-float"
                 />
               </div>
 
-              {/* Interactive Pill on Hover */}
-              <div className="absolute -bottom-2 z-20 px-3.5 py-1 rounded-full bg-black/85 border border-white/25 text-[11px] font-mono text-gray-300 group-hover:text-amber-300 group-hover:border-amber-400/50 backdrop-blur-md shadow-lg transition-all flex items-center gap-1.5">
-                <span>⚔️ 龍の加護 Tap Dragon for Blessing</span>
+              {/* Hover Prompt Pill */}
+              <div className="absolute -bottom-2 z-20 px-3 py-0.5 rounded-full bg-black/85 border border-white/25 text-[10px] font-mono text-gray-300 group-hover:text-amber-300 group-hover:border-amber-400/50 backdrop-blur-md shadow-md transition-all flex items-center gap-1">
+                <span>⚔️ Tap Dragon for Blessing</span>
               </div>
             </div>
 
-            {/* Dragon Energy & Hackathon Stats */}
-            <div className="w-full max-w-md mt-5 grid grid-cols-3 gap-2">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center backdrop-blur-md">
-                <span className="block font-['Bebas_Neue'] text-xl sm:text-2xl text-white leading-none">
+            {/* Quick Stats Grid */}
+            <div className="w-full grid grid-cols-3 gap-2 shrink-0 pt-2 border-t border-white/10">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-1.5 text-center">
+                <span className="block font-['Bebas_Neue'] text-lg sm:text-xl text-white leading-none">
                   50 HRS
                 </span>
-                <span className="text-[9px] text-gray-400 uppercase font-mono tracking-wider flex items-center justify-center gap-1">
-                  <span>五十時間</span>
+                <span className="text-[8px] text-gray-400 font-mono uppercase">
+                  Fifty Hours
                 </span>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center backdrop-blur-md">
-                <span className="block font-['Bebas_Neue'] text-xl sm:text-2xl text-cyan-300 leading-none">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-1.5 text-center">
+                <span className="block font-['Bebas_Neue'] text-lg sm:text-xl text-cyan-300 leading-none">
                   200+
                 </span>
-                <span className="text-[9px] text-gray-400 uppercase font-mono tracking-wider flex items-center justify-center gap-1">
-                  <span>猛者 Hackers</span>
+                <span className="text-[8px] text-gray-400 font-mono uppercase">
+                  Hackers
                 </span>
               </div>
-              <div className="bg-white/5 border border-amber-500/20 rounded-xl p-2.5 text-center backdrop-blur-md">
-                <span className="block font-['Bebas_Neue'] text-xl sm:text-2xl text-amber-300 leading-none">
+              <div className="bg-white/5 border border-amber-500/20 rounded-xl p-1.5 text-center">
+                <span className="block font-['Bebas_Neue'] text-lg sm:text-xl text-amber-300 leading-none">
                   ₹1,00,000+
                 </span>
-                <span className="text-[9px] text-gray-400 uppercase font-mono tracking-wider flex items-center justify-center gap-1">
-                  <span>賞金 Prize</span>
+                <span className="text-[8px] text-gray-400 font-mono uppercase">
+                  Prize Pool
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 50-HOUR JAPANESE MILESTONES ROADMAP / TIMELINE BAR */}
-        <section className="mt-2 sm:mt-3 lg:mt-4 w-full">
-          <div className="flex items-center justify-between mb-3 px-1">
-            <div className="flex items-center gap-2">
-              <span className="text-cyan-400 font-serif">⛩</span>
-              <h3 className="font-['Bebas_Neue'] text-lg sm:text-xl text-white tracking-wider flex items-center gap-2">
-                <span>50-HOUR CRUCIBLE MILESTONES</span>
-                <span className="font-serif text-xs text-gray-400 tracking-normal">(五段階関門)</span>
-              </h3>
-            </div>
-            <span className="text-[11px] font-mono text-gray-400">
-              Current: <strong className="text-white">{MILESTONES[currentMilestoneIndex].kanji}</strong> ({MILESTONES[currentMilestoneIndex].label})
-            </span>
-          </div>
-
-          {/* Milestone Cards Grid with Japanese Kanji */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
+        {/* =========================================================== */}
+        {/* 3. 50-HOUR CRUCIBLE MILESTONES (COMPACT 7-PHASE HORIZON BAR)*/}
+        {/* =========================================================== */}
+        <section className="w-full shrink-0">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5 sm:gap-2">
             {MILESTONES.map((m, idx) => {
               const isPassed = elapsedHoursExact >= m.hour;
               const isCurrent = idx === currentMilestoneIndex;
               return (
                 <div
                   key={m.hour}
-                  className={`p-3 rounded-2xl border transition-all backdrop-blur-xl relative overflow-hidden flex flex-col justify-between ${
+                  className={`p-2 rounded-xl border transition-all backdrop-blur-xl relative overflow-hidden flex flex-col justify-between ${
                     isCurrent
-                      ? 'bg-white/15 border-white/50 shadow-[0_0_20px_rgba(255,255,255,0.25)] scale-102'
+                      ? 'bg-white/15 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.25)] scale-102 ring-1 ring-cyan-400/50'
                       : isPassed
                       ? 'bg-white/5 border-white/20 text-gray-300 opacity-90'
                       : 'bg-black/30 border-white/5 text-gray-500 opacity-60'
                   }`}
+                  title={`${m.hour}H - ${m.label}: ${m.desc}`}
                 >
                   {isCurrent && (
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-white to-amber-400 animate-pulse" />
                   )}
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-sm">{m.icon}</span>
+                    <span className={`font-mono text-[9px] font-bold px-1 py-0.2 rounded ${
+                      isCurrent ? 'bg-amber-400 text-black' : isPassed ? 'bg-white/15 text-white' : 'bg-white/5 text-gray-400'
+                    }`}>
+                      {m.hour}H
+                    </span>
+                  </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-lg">{m.icon}</span>
-                      <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        isCurrent ? 'bg-amber-400 text-black' : isPassed ? 'bg-white/10 text-white' : 'bg-white/5 text-gray-400'
-                      }`}>
-                        {m.hour}H
-                      </span>
-                    </div>
-                    <div className="font-serif text-[11px] font-bold text-gray-300 mb-0.5">
+                    <div className="font-serif text-[10px] font-bold text-gray-300 truncate">
                       {m.kanji}
                     </div>
-                    <h4 className="font-['Inter'] text-xs font-bold leading-tight mb-1 text-white">
+                    <div className="font-['Inter'] text-[10px] font-bold text-white truncate leading-tight">
                       {m.label}
-                    </h4>
-                    <p className="text-[10px] text-gray-400 font-light line-clamp-2 leading-relaxed">
-                      {m.desc}
-                    </p>
+                    </div>
                   </div>
-                  <div className="mt-2 pt-1 border-t border-white/10 flex items-center justify-between text-[9px] font-mono">
+                  <div className="mt-1 pt-0.5 border-t border-white/10 flex items-center justify-between text-[8px] font-mono">
                     <span className={isCurrent ? 'text-amber-300 font-semibold' : isPassed ? 'text-emerald-400' : 'text-gray-500'}>
-                      {isCurrent ? '● 進行中 ACTIVE' : isPassed ? '✓ 突破 PASSED' : '未到 UPCOMING'}
+                      {isCurrent ? '● ACTIVE' : isPassed ? '✓ PASSED' : 'UPCOMING'}
                     </span>
                   </div>
                 </div>
@@ -918,29 +754,20 @@ const TimerPage = ({ onNavigateToGallery }) => {
         </section>
       </main>
 
-      {/* FOOTER BAR */}
-      <footer className="relative z-20 w-full px-4 sm:px-8 py-2.5 border-t border-white/10 backdrop-blur-md bg-black/55 flex flex-wrap items-center justify-between text-xs text-gray-400 font-mono gap-3">
-        <div className="flex items-center gap-3">
+      {/* ============================================================= */}
+      {/* 4. COMPACT FOOTER BAR                                         */}
+      {/* ============================================================= */}
+      <footer className="relative z-20 w-full px-3 sm:px-6 py-1.5 border-t border-white/10 backdrop-blur-md bg-black/60 flex flex-wrap items-center justify-between text-xs text-gray-400 font-mono gap-2 shrink-0">
+        <div className="flex items-center gap-2">
           <span className="text-white font-medium">MEDAITHON 2026 メダイソン</span>
           <span className="text-gray-600">|</span>
-          <span className="font-serif text-[11px]">龍の道 • 50時間極限ハッカソン</span>
+          <span className="font-serif text-[11px] hidden sm:inline">龍の道 • 50時間極限ハッカソン</span>
         </div>
-        <div className="flex items-center gap-4 text-[11px]">
-          <span className="hidden sm:inline">Shortcuts: <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white">Space</kbd> Play/Pause &bull; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white">F</kbd> Fullscreen &bull; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white">M</kbd> Mute</span>
+        <div className="flex items-center gap-3 text-[11px]">
+          <span className="hidden sm:inline">Shortcuts: <kbd className="px-1 py-0.2 bg-white/10 rounded text-white text-[10px]">Space</kbd> Play/Pause &bull; <kbd className="px-1 py-0.2 bg-white/10 rounded text-white text-[10px]">F</kbd> Fullscreen</span>
           <span className="text-gray-500">&copy; 2026 MedAIthon Council</span>
         </div>
       </footer>
-
-      {/* FLOATING PROMINENT FULLSCREEN TOGGLE BUTTON */}
-      {!isFullscreen && (
-        <button
-          onClick={toggleFullscreen}
-          className="fixed bottom-5 right-5 z-40 hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-black/85 hover:bg-black/95 border border-white/30 text-white text-xs font-mono backdrop-blur-2xl shadow-[0_4px_25px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:scale-105 transition-all cursor-pointer"
-        >
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>⛶ Immersive Fullscreen (全画面)</span>
-        </button>
-      )}
     </div>
   );
 };
