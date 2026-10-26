@@ -474,11 +474,11 @@ const RealtimeGalleryPage = ({ onNavigateToTimer }) => {
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider flex items-center gap-1.5 border ${
                 isTimerRunning
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                  ? 'bg-white/15 border-white/40 text-white shadow-[0_0_10px_rgba(255,255,255,0.2)]'
                   : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
               }`}
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${isTimerRunning ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${isTimerRunning ? 'bg-white animate-ping' : 'bg-amber-400'}`} />
               {isTimerRunning ? '50H LIVE COUNTDOWN' : 'PAUSED'}
             </span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono border border-cyan-400/30 bg-cyan-500/10 text-cyan-200">
@@ -814,7 +814,7 @@ const RealtimeGalleryPage = ({ onNavigateToTimer }) => {
 
             {/* Photo Index Counter */}
             <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-gray-400 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
               <span>
                 {currentSlideIndex + 1} / {filteredPhotos.length} Shots
               </span>
@@ -1164,8 +1164,8 @@ const RealtimeGalleryPage = ({ onNavigateToTimer }) => {
             </div>
 
             {uploadSuccessMsg && (
-              <div className="p-3 mb-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <div className="p-3 mb-3 rounded-xl bg-white/15 border border-white/40 text-white text-xs font-mono flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-white" />
                 <span>{uploadSuccessMsg}</span>
               </div>
             )}

@@ -240,10 +240,10 @@ const TimerPage = ({ onNavigateToGallery }) => {
           <div className="hidden sm:flex items-center gap-2">
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider flex items-center gap-1.5 border transition-all ${
               isRunning
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                ? 'bg-white/15 border-white/40 text-white shadow-[0_0_10px_rgba(255,255,255,0.3)]'
                 : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
             }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-white animate-ping' : 'bg-amber-400'}`} />
               {isRunning ? '● 50H COUNTDOWN RUNNING' : '⏸ PAUSED'}
             </span>
 
@@ -743,7 +743,7 @@ const TimerPage = ({ onNavigateToGallery }) => {
                     </div>
                   </div>
                   <div className="mt-1 pt-0.5 border-t border-white/10 flex items-center justify-between text-[8px] font-mono">
-                    <span className={isCurrent ? 'text-amber-300 font-semibold' : isPassed ? 'text-emerald-400' : 'text-gray-500'}>
+                    <span className={isCurrent ? 'text-amber-300 font-semibold' : isPassed ? 'text-white font-medium' : 'text-gray-500'}>
                       {isCurrent ? '● ACTIVE' : isPassed ? '✓ PASSED' : 'UPCOMING'}
                     </span>
                   </div>
